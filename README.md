@@ -4,13 +4,13 @@
 ## Prospective Telegram Commands
 
 ### Create new habit
-- /new <name> <unit of measurement>
+- /new \<name> \<unit of measurement>
     - /new meditate minutes
     - /new brush-teeth minutes
     - /new reading pages
 
 ### Log doing a habit
-- /log <name> <amount>
+- /log \<name> \<amount>
     - /log meditate 20
     - /log brush-teeth 60
     - /log reading 15
