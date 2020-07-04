@@ -14,6 +14,21 @@
 ; TODO: fill correct token
 (def token (env :telegram-token))
 (defn uuid [] (.toString (java.util.UUID/randomUUID)))
+
+(def help-text "There are 3 commands:
+/new <habit name> <unit of measurement>
+/log <habit name> <amount accomplished>
+/report <habit name> <amount of logs to see>
+                
+Here are some examples!
+/new meditate minutes
+/log meditate 30
+/log meditate 45
+/log meditate 15
+/report meditate
+                
+                    Good luck!")
+
 (def db {:dbtype "postgresql"
             :dbname "habit_tracker"
             :host "localhost"
@@ -103,13 +118,11 @@
 
   (h/command-fn "start"
                 (fn [{{id :id :as chat} :chat}]
-                  (println "Bot joined new chat: " chat)
-                  (t/send-text token id "Welcome to habit_tracker!")))
+                  (t/send-text token id "Welcome to Habit Tracker! Start by checking out /help and happy habit tracking!")))
 
   (h/command-fn "help"
                 (fn [{{id :id :as chat} :chat}]
-                  (println "Help was requested in " chat)
-                  (t/send-text token id "Help is on the way")))
+                  (t/send-text token id help-text)))
 
   (h/message-fn
    (fn [{{id :id} :chat :as message}]
