@@ -65,9 +65,16 @@
                            (user-input 2)
                            ((msg :from) :id))))
 
+(defn log-row->pretty-report
+  [log]
+  (str "- " (log :habit/name) " for "(log :log/amount) " " (log :habit/unit) "\n"))
+
 (defn prettify-report
-  [sql-result]
-  (println sql-result))
+  [logs]
+  (reduce (fn [final-string log]
+            (str final-string (log-row->pretty-report log)))
+          ""
+          logs))
 
 (defn get-report
   ([telegram-user-token habit-name] (get-report telegram-user-token habit-name 10 :num-of-logs))
@@ -75,8 +82,8 @@
   ([telegram-user-token habit-name amount unit-of-measurement]
   (let [habit-id (habit-name-to-id habit-name telegram-user-token)]
   (prettify-report (jdbc/execute! ds ["
-                            select * from log where habit_id=? LIMIT ?"
-                          habit-id amount] {:return-keys true})))))
+                            select * from log left join habit on log.habit_id = habit.id where log.habit_id=? LIMIT ?"
+                          habit-id amount])))))
 
 
 (h/defhandler handler
