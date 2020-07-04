@@ -49,6 +49,7 @@
                         " habit-id (Integer/parseInt amount) (uuid)] 
                      {:return-keys true})))
 
+
 (defn new-habit
   [msg]
   (let [user-input (str/split (msg :text) #" " 3)]
@@ -64,6 +65,19 @@
                            (user-input 2)
                            ((msg :from) :id))))
 
+(defn prettify-report
+  [sql-result]
+  (println sql-result))
+
+(defn get-report
+  ([telegram-user-token habit-name] (get-report telegram-user-token habit-name 10 :num-of-logs))
+  ([telegram-user-token habit-name amount] (get-report telegram-user-token habit-name habit-name amount :num-of-logs))
+  ([telegram-user-token habit-name amount unit-of-measurement]
+  (let [habit-id (habit-name-to-id habit-name telegram-user-token)]
+  (prettify-report (jdbc/execute! ds ["
+                            select * from log where habit_id=? LIMIT ?"
+                          habit-id amount] {:return-keys true})))))
+
 
 (h/defhandler handler
   (h/command-fn "new"
@@ -75,6 +89,10 @@
                 (fn [msg]
                   (log-habit msg)
                   (t/send-text token ((msg :from) :id) (str "Logged Habit " ((str/split (msg :text) #" " 3) 1)))))
+
+  (h/command-fn "report"
+                (fn [msg]
+                  (t/send-text token ((msg :from) :id) (apply get-report ((msg :from) :id) (rest  (str/split (msg :text) #" " 4))))))
 
   (h/command-fn "start"
                 (fn [{{id :id :as chat} :chat}]
