@@ -5,23 +5,23 @@
 
 ### Create new habit
 - /new <name> <unit of measurement>
-    - /new-habit meditate minutes
-    - /new-habit brush-teeth minutes
-    - /new-habit reading pages
+    - /new meditate minutes
+    - /new brush-teeth minutes
+    - /new reading pages
 
 ### Log doing a habit
 - /log <name> <amount>
-    - /log-habit meditate 20
-    - /log-habit brush-teeth 60
-    - /log-habit reading 15
+    - /log meditate 20
+    - /log brush-teeth 60
+    - /log reading 15
 
 ### Get reports
 - /report \<name> <amount=10> \<unit of measurement=num-of-logs>
-    - /get-report meditate 
+    - /report meditate 
         - Returns the last ten logs
-    - /get-report meditate 20
+    - /report meditate 20
         - Returns the last 20 logs
-    - /get-report meditate 20 days
+    - /report meditate 20 days
         - Returns the last 20 days worth of logs
-    - /get-report meditate days
+    - /report meditate days
         - Returns the last 10 days worth of logs
