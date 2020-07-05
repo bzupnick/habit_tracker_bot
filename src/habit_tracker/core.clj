@@ -97,7 +97,7 @@ Here are some examples!
   [log]
   (if (= "done"  (log :habit/unit))
     (str "- " (log :habit/name) " on " (prettify-date (log :log/date)) "\n")
-    (str "- " (log :habit/name) " for " (log :log/amount) " " (log :habit/unit) " " "\n")))
+    (str "- " (log :habit/name) " for " (log :log/amount) " " (log :habit/unit) " on " (prettify-date (log :log/date)) "\n")))
 
 (defn prettify-report
   [logs]
