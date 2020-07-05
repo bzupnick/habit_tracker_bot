@@ -10,7 +10,8 @@
                  [morse               "0.4.3"]
                  [seancorfield/next.jdbc "1.1.547"]
                  [org.postgresql/postgresql "42.2.10"]
-                 [honeysql "1.0.444"]]
+                 [honeysql "1.0.444"]
+                 [clojure.java-time "0.3.2"]]
 
   :plugins [[lein-environ "1.1.0"]]
 

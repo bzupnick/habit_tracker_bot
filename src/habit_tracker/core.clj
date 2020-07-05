@@ -5,10 +5,7 @@
             [morse.handlers :as h]
             [morse.polling :as p]
             [morse.api :as t]
-            [next.jdbc :as jdbc]
-            [honeysql.core :as sql]
-            [honeysql.helpers :refer :all :as helpers]
-            [next.jdbc.result-set :as rs] )
+            [next.jdbc :as jdbc] )
   (:gen-class))
 
 ; TODO: fill correct token
@@ -55,13 +52,25 @@ Here are some examples!
                          ]) :habit/id)
   )
 
+(defn parse-amount-given
+  [amount-given]
+  (if (= amount-given "yes")
+    1
+    (Integer/parseInt amount-given)))
+
+(defn amount-db->readable-amount
+  [amount unit-of-measurement]
+  (if (and (= amount 1) (= unit-of-measurement "done"))
+    "Done!"
+    1))
+
 (defn log-having-done-habit
   [habit-name amount telegram-token-id]
   (let [habit-id (habit-name-to-id habit-name telegram-token-id)] 
     (jdbc/execute-one! ds ["
                           insert into log(habit_id,amount,id)
                           values(?,?,?)
-                        " habit-id (Integer/parseInt amount) (uuid)] 
+                        " habit-id (parse-amount-given amount) (uuid)] 
                      {:return-keys true})))
 
 
@@ -80,9 +89,15 @@ Here are some examples!
                            (user-input 2)
                            ((msg :from) :id))))
 
+(defn prettify-date
+  [date]
+   (.format (java.text.SimpleDateFormat. "MMMM dd yyyy") date))
+
 (defn log-row->pretty-report
   [log]
-  (str "- " (log :habit/name) " for "(log :log/amount) " " (log :habit/unit) "\n"))
+  (if (= "done"  (log :habit/unit))
+    (str "- " (log :habit/name) " on " (prettify-date (log :log/date)) "\n")
+    (str "- " (log :habit/name) " for " (log :log/amount) " " (log :habit/unit) " " "\n")))
 
 (defn prettify-report
   [logs]
