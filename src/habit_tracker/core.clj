@@ -16,6 +16,7 @@
 /new <habit name> <unit of measurement>
 /log <habit name> <amount accomplished>
 /report <habit name> <amount of logs to see>
+/habits 
                 
 Here are some examples!
 /new meditate minutes
