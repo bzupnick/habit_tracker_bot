@@ -102,18 +102,31 @@ Here are some examples!
 (defn prettify-report
   [logs]
   (reduce (fn [final-string log]
-            (str final-string (log-row->pretty-report log)))
+            (str final-string "- "(log-row->pretty-report log)))
           ""
           logs))
 
+(defn prettify-habits
+  [habits]
+  (reduce (fn [final-string habit]
+            (str final-string (habit :habit/name) "\n"))
+          ""
+          habits))
+
 (defn get-report
-  ([telegram-user-token habit-name] (get-report telegram-user-token habit-name 10 :num-of-logs))
-  ([telegram-user-token habit-name amount] (get-report telegram-user-token habit-name habit-name amount :num-of-logs))
+  ([telegram-user-token habit-name] (get-report telegram-user-token habit-name 10 :logs))
+  ([telegram-user-token habit-name amount] (get-report telegram-user-token habit-name habit-name amount))
   ([telegram-user-token habit-name amount unit-of-measurement]
   (let [habit-id (habit-name-to-id habit-name telegram-user-token)]
   (prettify-report (jdbc/execute! ds ["
                             select * from log left join habit on log.habit_id = habit.id where log.habit_id=? LIMIT ?"
                           habit-id amount])))))
+
+(defn get-habits 
+  [telegram-user-token]
+  (prettify-habits (jdbc/execute! ds ["
+                            select name from habit where telegram_user_token = ?"
+                           (str telegram-user-token)])))
 
 
 (h/defhandler handler
@@ -130,6 +143,10 @@ Here are some examples!
   (h/command-fn "report"
                 (fn [msg]
                   (t/send-text token ((msg :from) :id) (apply get-report ((msg :from) :id) (rest  (str/split (msg :text) #" " 4))))))
+
+  (h/command-fn "habits"
+                (fn [msg]
+                  (t/send-text token ((msg :from) :id) (get-habits ((msg :from) :id) ))))
 
   (h/command-fn "start"
                 (fn [{{id :id :as chat} :chat}]
